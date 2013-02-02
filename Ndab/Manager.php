@@ -38,6 +38,8 @@ abstract class Manager extends Nette\Object
 	/** @var Settings */
 	protected $settings;
 
+	/** @var string */
+	protected $rowClass;
 
 
 	/**
@@ -71,7 +73,7 @@ abstract class Manager extends Nette\Object
 	 * @return Table\ActiveRow
 	 */
 	public function initEntity(array $data, Table\Selection $selection)
-	{
+	{                                    
 		$class = $selection->getRowClass();
 		if (!$class && isset($this->settings->tables->{$selection->getTable()})) {
 			$class = $this->settings->tables->{$selection->getTable()};
@@ -83,6 +85,9 @@ abstract class Manager extends Nette\Object
 	}
 
 
+    public function getRowClass() {
+        return $this->rowClass;
+    }
 
 	/**
 	 * Returns all rows filtered by $conds
