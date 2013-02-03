@@ -37,7 +37,7 @@ class GroupedSelection extends Table\GroupedSelection
 	 * @param  string  database table name
 	 * @param  string  joining column
 	 */
-	public function __construct(Selection $refTable, $table, $column)
+	public function __construct($refTable, $table, $column)
 	{
 		parent::__construct($refTable, $this->table = $table, $column);
 	}
