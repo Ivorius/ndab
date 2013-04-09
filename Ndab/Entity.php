@@ -20,6 +20,9 @@ use Nette,
  * @author  Jan Skrasek
  */
 class Entity extends Table\ActiveRow {
+	
+	/** @var string */
+	protected $lang;
 
     public function & __get($key) {
         $key = $this->getRightKey($key);
