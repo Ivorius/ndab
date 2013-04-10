@@ -12,7 +12,7 @@
 namespace Ndab;
 
 use Nette,
-    Nette\Database\Table;
+	Nette\Database\Table;
 
 /**
  * Ndab base model entity
@@ -20,73 +20,98 @@ use Nette,
  * @author  Jan Skrasek
  */
 class Entity extends Table\ActiveRow {
-	
+
 	/** @var string */
 	protected $lang;
 
-    public function & __get($key) {
-        $key = $this->getRightKey($key);
+	/** @var array of row data */
+	private $mydata;
 
-        $method = "get$key";
-        $method[3] = $method[3] & "\xDF";
+	public function & __get($key) {
+		$key = $this->getRightKey($key);
 
-        if (!$this->__isset($key) && method_exists($this, $method)) {
-            $return = $this->$method();
-            return $return;
-        }
+		$method = "get$key";
+		$method[3] = $method[3] & "\xDF";
 
-        return parent::__get($key);
-    }
+		if (!$this->__isset($key) && method_exists($this, $method)) {
+			$return = $this->$method();
+			return $return;
+		}
 
-    /**
-     * Returns array of subItems fetched from related() call
-     * @param  string  "relatedTable:subItem"
-     * @param  callable  callback for additional related call definition
-     * @return array
-     */
-    protected function getSubRelation($selector, $relatedCallback = NULL) {
-        list($relatedSelector, $subItemSelector) = explode(':', $selector);
+		if ($this->mydata && array_key_exists($key, $this->mydata)) {
+			return $this->mydata[$key];
+		}
 
-        $related = $this->related($relatedSelector);
-        if ($relatedCallback) {
-            callback($relatedCallback)->invokeArgs(array($related));
-        }
+		return parent::__get($key);
+	}
 
-        $subItems = array();
-        foreach ($related as $subItem) {
-            $subItems[] = $subItem->$subItemSelector;
-        }
+	public function __set($key, $value) {
+		$this->mydata[$key] = $value;
+	}
 
-        return $subItems;
-    }
+	public function __isset($key) {
+		if ($this->mydata && array_key_exists($key, $this->mydata)) {
+			return isset($this->mydata[$key]);
+		}
+		return parent::__isset($key);
+	}
 
-     /**
-     * Set lang
-     * @param string $lang
-     */
-    public function setLang($lang) {
-        $this->lang = $lang;
-        return $this;
-    }
-    
-    public function getLang() {
-        return $this->lang;
-    }
-    
-    /**
-     * Return right language column name
-     * @param string $key
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    protected function getRightKey($key) {
-        if (substr($key, -1) == "_") {
-            if (!$this->lang)
-                throw new \InvalidArgumentException("If you want use \"$key\" for language variant, you must setup \$lang first");
-            $prefix = $this->lang . "_";
-            $key = $prefix . preg_replace('~_$~', '', $key);
-        }
-        return $key;
-    }
+	public function __unset($key) {
+		if ($this->mydata && array_key_exists($key, $this->mydata)) {
+			unset($this->mydata[$key]);
+		}
+		return parent::__unset($key);
+	}
+
+	/**
+	 * Returns array of subItems fetched from related() call
+	 * @param  string  "relatedTable:subItem"
+	 * @param  callable  callback for additional related call definition
+	 * @return array
+	 */
+	protected function getSubRelation($selector, $relatedCallback = NULL) {
+		list($relatedSelector, $subItemSelector) = explode(':', $selector);
+
+		$related = $this->related($relatedSelector);
+		if ($relatedCallback) {
+			callback($relatedCallback)->invokeArgs(array($related));
+		}
+
+		$subItems = array();
+		foreach ($related as $subItem) {
+			$subItems[] = $subItem->$subItemSelector;
+		}
+
+		return $subItems;
+	}
+
+	/**
+	 * Set lang
+	 * @param string $lang
+	 */
+	public function setLang($lang) {
+		$this->lang = $lang;
+		return $this;
+	}
+
+	public function getLang() {
+		return $this->lang;
+	}
+
+	/**
+	 * Return right language column name
+	 * @param string $key
+	 * @return string
+	 * @throws \InvalidArgumentException
+	 */
+	protected function getRightKey($key) {
+		if (substr($key, -1) == "_") {
+			if (!$this->lang)
+				throw new \InvalidArgumentException("If you want use \"$key\" for language variant, you must setup \$lang first");
+			$prefix = $this->lang . "_";
+			$key = $prefix . preg_replace('~_$~', '', $key);
+		}
+		return $key;
+	}
 
 }
