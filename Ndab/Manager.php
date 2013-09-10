@@ -24,6 +24,9 @@ abstract class Manager extends Nette\Object {
     /** @var Nette\Database\Connection */
     protected $connection;
 
+    /** @var Nette\Database\SelectionFactory  */
+    protected $selectionFactory;
+
     /** @var Nette\Database\Table\IReflection */
     protected $databaseReflection;
 
@@ -48,9 +51,10 @@ abstract class Manager extends Nette\Object {
      * @param  string
      * @param  string
      */
-    public function __construct(Nette\Database\Connection $connection, Settings $settings, $tableName = NULL) {
+    public function __construct(Nette\Database\Connection $connection,  Nette\Database\SelectionFactory $selectionFactory, Settings $settings, $tableName = NULL) {
         $this->connection = $connection;
         $this->settings = $settings;
+		$this->selectionFactory = $selectionFactory;
         if ($tableName) {
             $this->tableName = $tableName;
         }
@@ -59,7 +63,7 @@ abstract class Manager extends Nette\Object {
             throw new Nette\InvalidStateException('Undefined tableName property in ' . $this->getReflection()->name);
         }
 
-        $this->databaseReflection = $connection->table($this->tableName)->getDatabaseReflection();
+        $this->databaseReflection = $this->selectionFactory->table($this->tableName)->getDatabaseReflection();
         $this->primaryColumn = $this->databaseReflection->getPrimary($this->tableName);
     }
 
