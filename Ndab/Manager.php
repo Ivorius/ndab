@@ -23,7 +23,7 @@ use Nette,
  */
 abstract class Manager extends Nette\Object
 {
-	/** @var Nette\Database\Connection */
+	/** @var Nette\Database\Context */
 	protected $context;
 
 	/** @var Nette\Database\IReflection */
@@ -38,7 +38,11 @@ abstract class Manager extends Nette\Object
 	/** @var Settings */
 	protected $settings;
 
+    /** @var string */
+    protected $rowClass;
 
+    /** @var string */
+    protected $lang;
 
 	/**
 	 * Manager constructor.
@@ -78,10 +82,17 @@ abstract class Manager extends Nette\Object
 		}
 		if (!$class) {
 			$class = '\Ndab\Entity';
-		}
-		return new $class($data, $selection);
+		}		
+
+        $entity = new $class($data, $selection);
+        if ($this->lang)
+            $entity->setLang($this->lang);
+        return $entity;
 	}
 
+	public function getRowClass() {
+		return $this->rowClass;
+	}
 
 
 	/**
@@ -174,5 +185,111 @@ abstract class Manager extends Nette\Object
 	{
 		return $this->databaseReflection;
 	}
+
+
+    /** ****************** unio ******************* */
+
+    /**
+     * Set lang
+     * @param string $lang
+     */
+    public function setLang($lang) {
+        $this->lang = $lang;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return Selection
+     */
+    public function getTable() {
+        return $this->table();
+    }
+    
+    
+    /**
+     * Vrací všechny záznamy z databáze
+     * @return \Nette\Database\Table\Selection
+     */
+    public function findAll() {
+        return $this->table();
+    }
+
+    /**
+     * Vrací vyfiltrované záznamy na základě vstupního pole
+     * (pole array('name' => 'David') se převede na část SQL dotazu WHERE name = 'David')
+     *
+     * @param array $by
+     *
+     * @return \Nette\Database\Table\Selection
+     */
+    public function findBy(array $by) {
+        return $this->getAll($by);
+    }
+
+    /**
+     * To samé jako findBy akorát vrací vždy jen jeden záznam
+     *
+     * @param array $by
+     *
+     * @return \Nette\Database\Table\ActiveRow|FALSE
+     */
+    public function findOneBy(array $by) {
+        return $this->findBy($by)->limit(1)->fetch();
+    }
+
+    /**
+     * Vrací záznam s daným primárním klíčem
+     *
+     * @param int $id
+     *
+     * @return \Nette\Database\Table\ActiveRow|FALSE
+     */
+    public function find($id) {
+        return $this->get($id);
+    }
+
+    /**
+     * Vloží záznamy do tabulky
+     * @param \Nette\ArrayHash | array $values
+     * @return type
+     */
+    public function save($values) {
+        return $this->create($values);
+    }
+
+    /** ********************** Low level queries ******************** */
+
+    /**
+     * Začátek transakce
+     */
+    public function beginTransaction() {
+        $this->context->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Konec transakce
+     */
+    public function commit() {
+        $this->context->getConnection()->commit();
+    }
+
+    /**
+     * Surové dotazy do DB
+     * @param string $q
+     * @return type
+     */
+    public function rawQuery($q) {
+        return $this->context->getConnection()->query($q);
+    }
+
+    /**
+     * Specific table
+     * @param string $table
+     * @return \Nette\Database\Table\Selection
+     */
+    public function getSpecificTable($table) {
+        return new Selection($this->context->getConnection(), $table, $this);
+    }
 
 }
