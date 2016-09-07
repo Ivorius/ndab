@@ -26,8 +26,8 @@ abstract class Manager extends Nette\Object
 	/** @var Nette\Database\Context */
 	protected $context;
 
-	/** @var Nette\Database\IReflection */
-	protected $databaseReflection;
+	/** @var Nette\Database\IConventions */
+	protected $conventions;
 
 	/** @var string */
 	protected $tableName;
@@ -62,8 +62,8 @@ abstract class Manager extends Nette\Object
 			throw new Nette\InvalidStateException('Undefined tableName property in ' . $this->getReflection()->name);
 		}
 
-		$this->databaseReflection = $context->getDatabaseReflection();
-		$this->primaryColumn = $this->databaseReflection->getPrimary($this->tableName);
+		$this->conventions = $context->getConventions();
+		$this->primaryColumn = $this->conventions->getPrimary($this->tableName);
 	}
 
 
@@ -173,18 +173,11 @@ abstract class Manager extends Nette\Object
 	 */
 	final protected function table()
 	{
-		return new Selection($this->context->getConnection(), $this->tableName, $this);
+		return new Selection($this->context, $this->context->getConventions(), $this->tableName, $this);
 	}
 
 
 
-	/**
-	 * @return Nette\Database\IReflection
-	 */
-	public function getDatabaseReflection()
-	{
-		return $this->databaseReflection;
-	}
 
 
     /** ****************** unio ******************* */
@@ -289,7 +282,7 @@ abstract class Manager extends Nette\Object
      * @return \Nette\Database\Table\Selection
      */
     public function getSpecificTable($table) {
-        return new Selection($this->context->getConnection(), $table, $this);
+        return new Selection($this->context, $this->context->getConventions(), $table, $this);
     }
 
 }

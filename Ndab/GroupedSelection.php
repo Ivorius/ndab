@@ -11,8 +11,10 @@
 
 namespace Ndab;
 
-use Nette,
-	Nette\Database\Table;
+use Nette;
+use Nette\Database\Table;
+use Nette\Database\Context;
+use Nette\Database\IConventions;
 
 
 
@@ -35,14 +37,21 @@ class GroupedSelection extends Table\GroupedSelection
 
 	/**
 	 * Creates filtered and grouped table representation.
-	 * @param  Selection  $refTable
+	 * @param  Context
+	 * @param  IConventions
 	 * @param  string  database table name
 	 * @param  string  joining column
+	 * @param  Selection
+	 * @param  Nette\Caching\IStorage|NULL
+	 * @param  Manager
 	 */
-	public function __construct(Table\Selection $refTable, $table, $column, Manager $manager)
+	public function __construct(Context $context, IConventions $conventions, $table, $column,  Table\Selection $refTable,  Manager $manager, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
-		parent::__construct($refTable, $this->table = $table, $column);
+		parent::__construct($context, $conventions, $table, $column,  $refTable,  $cacheStorage);
 		$this->manager = $manager;
+		$this->table = $table;
+		$this->conventions = $conventions;
+		$this->context = $context;
 	}
 
 
@@ -78,14 +87,14 @@ class GroupedSelection extends Table\GroupedSelection
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->connection, $table ?: $this->table, $this->refTable->manager);
+		return new Selection($this->context, $this->conventions, $table ?: $this->table, $this->refTable->manager);
 	}
 
 
 
 	protected function createGroupedSelectionInstance($table, $column)
 	{
-		return new GroupedSelection($this, $table, $column, $this->manager);
+		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->manager);
 	}
 
 }
