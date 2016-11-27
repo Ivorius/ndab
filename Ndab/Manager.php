@@ -41,8 +41,6 @@ abstract class Manager extends Nette\Object
     /** @var string */
     protected $rowClass;
 
-    /** @var string */
-    protected $lang;
 
 	/**
 	 * Manager constructor.
@@ -85,8 +83,6 @@ abstract class Manager extends Nette\Object
 		}		
 
         $entity = new $class($data, $selection);
-        if ($this->lang)
-            $entity->setLang($this->lang);
         return $entity;
 	}
 
