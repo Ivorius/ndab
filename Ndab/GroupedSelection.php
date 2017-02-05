@@ -30,6 +30,7 @@ class GroupedSelection extends Table\GroupedSelection
 
 	/** @var string */
 	protected $rowClass;
+
 	/** @var Manager */
 	protected $manager;
 
@@ -54,6 +55,11 @@ class GroupedSelection extends Table\GroupedSelection
 		$this->context = $context;
 	}
 
+
+	public function getManager()
+	{
+		return $this->manager;
+	}
 
 
 	public function getTable()
@@ -80,14 +86,14 @@ class GroupedSelection extends Table\GroupedSelection
 
 	protected function createRow(array $row)
 	{
-		return $this->refTable->manager->initEntity($row, $this);
+		return $this->refTable->getManager()->initEntity($row, $this);
 	}
 
 
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->context, $this->conventions, $table ?: $this->table, $this->refTable->manager);
+		return new Selection($this->context, $this->conventions, $table ?: $this->table, $this->refTable->getManager());
 	}
 
 

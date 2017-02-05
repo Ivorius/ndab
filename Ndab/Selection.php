@@ -34,7 +34,7 @@ class Selection extends Table\Selection
 
 	/** @var Nette\Caching\Cache */
 	protected $cache;
-	
+
 	/** @var Manager */
 	protected $manager;
 
@@ -62,7 +62,7 @@ class Selection extends Table\Selection
 
 
 	/**
-	 * @return  Manager
+	 * @return Manager
 	 */
 	public function getManager()
 	{
