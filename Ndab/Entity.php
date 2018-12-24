@@ -106,7 +106,7 @@ class Entity extends Table\ActiveRow {
 	 * @throws \InvalidArgumentException
 	 */
 	protected function getRightKey($key) {
-		if (substr($key, -1) == "_") {
+		if (is_string($key) && substr($key, -1) == "_") {
 			if (!$this->lang)
 				throw new \InvalidArgumentException("If you want use \"$key\" for language variant, you must setup \$lang first");
 			$prefix = $this->lang . "_";
