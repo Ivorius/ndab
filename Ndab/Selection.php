@@ -25,7 +25,7 @@ use Nette\Database\IConventions;
  */
 class Selection extends Table\Selection
 {
-    
+
 	/** @var Context */
 	protected $context;
 
@@ -54,7 +54,7 @@ class Selection extends Table\Selection
 	public function __construct(Context $context, IConventions $conventions, $table, Manager $manager, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		parent::__construct($context, $conventions, $table, $cacheStorage);
-		
+
 		$this->table = $table;
 		$this->manager = $manager;
 	}
@@ -80,7 +80,7 @@ class Selection extends Table\Selection
 
 	public function setRowClass($class)
 	{
-		$this->manager->rowClass = $class;
+		$this->manager->setRowClass($class);
 		return $this;
 	}
 
@@ -88,7 +88,7 @@ class Selection extends Table\Selection
 
 	public function getRowClass()
 	{
-		return $this->manager->rowClass;
+		return $this->manager->getRowClass();
 	}
 
 

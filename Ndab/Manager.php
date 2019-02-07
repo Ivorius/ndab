@@ -11,8 +11,9 @@
 
 namespace Ndab;
 
-use Nette,
-	Nette\Database\Table;
+use Nette;
+use Nette\Database\Table;
+use Nette\SmartObject;
 
 
 
@@ -20,9 +21,13 @@ use Nette,
  * Ndab base entity manager
  *
  * @author  Jan Skrasek
+
  */
-abstract class Manager extends Nette\Object
+abstract class Manager
 {
+	use SmartObject;
+
+
 	/** @var Nette\Database\Context */
 	protected $context;
 
@@ -80,14 +85,20 @@ abstract class Manager extends Nette\Object
 		}
 		if (!$class) {
 			$class = '\Ndab\Entity';
-		}		
+		}
 
         $entity = new $class($data, $selection);
         return $entity;
 	}
 
-	public function getRowClass() {
+	public function getRowClass()
+	{
 		return $this->rowClass;
+	}
+
+	public function setRowClass($class)
+	{
+		$this->rowClass = $class;
 	}
 
 
