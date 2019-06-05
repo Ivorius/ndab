@@ -33,6 +33,7 @@ class Entity extends Table\ActiveRow {
 		$method = "get$key";
 		$method[3] = $method[3] & "\xDF";
 
+		//alert! method can be executed if $key = null in database, because isset return false on null
 		if (!$this->__isset($key) && method_exists($this, $method)) {
 			$return = $this->$method();
 			return $return;
