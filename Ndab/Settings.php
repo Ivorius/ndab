@@ -11,10 +11,10 @@
 
 namespace Ndab;
 
-use Nette;
+use Nette\Utils\ArrayHash;
 
 
 
-class Settings extends Nette\ArrayHash
+class Settings extends ArrayHash
 {
 }
