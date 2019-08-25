@@ -27,14 +27,27 @@ class Entity extends Table\ActiveRow {
 	/** @var array of row data */
 	private $mydata;
 
+
+	/**
+	 * Helper function for check if key exists
+	 */
+	public function isExists($key): bool
+	{
+		if ($this->mydata && array_key_exists($key, $this->mydata)) {
+			return true;
+		}
+
+		return $this->accessColumn($key);
+	}
+
+
 	public function & __get($key) {
 		$key = $this->getRightKey($key);
 
 		$method = "get$key";
 		$method[3] = $method[3] & "\xDF";
 
-		//alert! method can be executed if $key = null in database, because isset return false on null
-		if (!$this->__isset($key) && method_exists($this, $method)) {
+		if (!$this->isExists($key) && method_exists($this, $method)) {
 			$return = $this->$method();
 			return $return;
 		}
@@ -52,7 +65,7 @@ class Entity extends Table\ActiveRow {
 
 	public function __isset($key) {
 		if ($this->mydata && array_key_exists($key, $this->mydata)) {
-			return isset($this->mydata[$key]);
+			return true;
 		}
 		return parent::__isset($key);
 	}
