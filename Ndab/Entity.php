@@ -25,7 +25,13 @@ class Entity extends Table\ActiveRow {
 	protected $lang;
 
 	/** @var array of row data */
-	private $mydata;
+	private $mydata = [];
+
+
+	public function getMyData(): array
+	{
+		return $this->mydata;
+	}
 
 
 	/**

@@ -150,8 +150,10 @@ abstract class Manager
 			throw new Nette\InvalidArgumentException('Missing primary value');
 
 		$primaryValue = $values[$this->primaryColumn];
-		unset($values[$this->primaryColumn]);
-		$this->table()->where($this->primaryColumn, $primaryValue)->update($values);
+
+		$updates = $values->getMyData();
+
+		$this->table()->where($this->primaryColumn, $primaryValue)->update($updates);
 		return $this->get($primaryValue);
 	}
 
